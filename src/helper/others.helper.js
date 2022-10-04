@@ -1,6 +1,5 @@
 'use strict';
 const crypto = require('crypto');
-const PhoneNumber = require('awesome-phonenumber');
 const uuid = require('uuid4');
 const otherHelper = {};
 
@@ -33,34 +32,6 @@ otherHelper.mongoIdExistInArray = (mongodbIdArray, mongoDbId) => {
     if (mongodbIdArray[i].toString() === mongoDbId.toString()) return true;
   }
   return false;
-};
-otherHelper.parsePhoneNo = (phone, RegionCode) => {
-  try {
-    var pn = new PhoneNumber(phone, RegionCode);
-    if (!pn.isValid()) {
-      return {
-        status: false,
-        data: 'Provided no is invalid mobile no.',
-      };
-    } else if (!pn.isMobile()) {
-      return {
-        status: false,
-        data: 'Provided no should be mobile no.',
-      };
-    } else if (pn.isValid()) {
-      return {
-        status: true,
-        data: pn.getNumber('e164'),
-      };
-    } else {
-      return {
-        status: true,
-        data: pn.getNumber('e164'),
-      };
-    }
-  } catch (err) {
-    return err;
-  }
 };
 
 otherHelper.parseFilters = (req, defaults, is_deleted) => {

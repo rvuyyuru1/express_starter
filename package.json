@@ -6,12 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose --coverage",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "awesome-phonenumber": "^3.4.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
@@ -26,31 +27,21 @@
     "helmet": "^6.0.0",
     "hpp": "^0.2.3",
     "http-status": "^1.5.3",
-    "jimp": "^0.16.2",
     "joi": "^17.6.2",
     "jsonwebtoken": "^8.5.1",
-    "mailgun-js": "^0.22.0",
     "moment": "^2.29.4",
     "mongoose": "^6.6.4",
     "morgan": "^1.10.0",
-    "multer": "^1.4.0",
     "node-cache": "^5.1.2",
-    "nodemailer": "^6.8.0",
-    "qr-image": "^3.2.0",
     "request-ip": "^3.3.0",
     "request-promise": "^4.2.2",
-    "snyk": "^1.1020.0",
-    "speakeasy": "^2.0.0",
-    "uniq": "^1.0.1",
     "useragent": "^2.3.0",
-    "uuid4": "^2.0.3",
-    "validator": "^13.7.0"
+    "uuid4": "^2.0.3"
   },
   "devDependencies": {
     "jest": "^29.1.2",
     "nodemon": "^2.0.20",
-    "snyk": "^1.1020.0",
+    "@snyk/protect": "^1.1020.0",
     "supertest": "^6.3.0"
-  },
-  "snyk": true
+  }
 }

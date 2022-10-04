@@ -17,7 +17,7 @@ internal.addloginlog = async (req, token, next) => {
     next(err);
   }
 };
-loginLogController.logout = async (res, res, next) => {
+loginLogController.logout = async (req, res, next) => {
   let { token } = req;
   try {
     let inactiveLog = await loginLogSch.findOneAndUpdate({ token }, { $set: { is_active: false, logout_date: Date.now() } });
