@@ -6,7 +6,6 @@ const requestIp = require('request-ip');
 const otherHelper = require('../helper/others.helper');
 const loginlogSchema = require('../modules/user/loginlogs/loginlogSchema');
 const authMiddleware = {};
-
 authMiddleware.retrieveClientInfo = async (req, res, next) => {
   try {
     let platform = req.headers['platform'];

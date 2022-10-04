@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const otherHelper = require('../../helper/others.helper');
 const schema = mongoose.Schema;
 
 const userSchema = new schema(
@@ -28,13 +27,13 @@ const userSchema = new schema(
     imgUrl: {
       type: String,
     },
-    // is_active: { type: Boolean, required: true, default: false },
+
     isPro: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true },
+  { timestamps: true, autoIndex: true, optimisticConcurrency: true },
 );
 
 module.exports = USER = mongoose.model('users', userSchema);

@@ -15,7 +15,7 @@ userController.createUser = Joi.object({
   password: Joi.string().required(),
 });
 userController.putUser = Joi.object({
-  userName: Joi.string().required(),
+  user_id: Joi.string().required(),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   imgUrl: Joi.string(),
@@ -24,7 +24,6 @@ userController.checkUser = Joi.object({
   userName: Joi.string().required(),
   password: Joi.string().required(),
 });
-
 userController.addUser = async (req, res, next) => {
   try {
     let { body } = req;
@@ -42,17 +41,14 @@ userController.addUser = async (req, res, next) => {
     let result = await user.save();
     var token = jwt.sign(
       {
-        id: result._id,
-        userName: result.userName,
-        firstName: result.firstName,
-        lastName: result.lastName,
+        user_id: result._id,
       },
       `${process.env.SCREAT_CODE}`,
       { expiresIn: '48h' },
     );
     Logger.internal.addloginlog(req, token, next);
     if (result) {
-      otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'User data saved successfully!', token);
+      otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'User data created successfully!', token);
     } else {
       return otherHelper.sendResponse(res, httpStatus.BAD_REQUEST, false, null, null, 'Invalid Data', null);
     }
@@ -71,10 +67,7 @@ userController.getUser = async (req, res, next) => {
       if (isuser) {
         var token = jwt.sign(
           {
-            id: result._id,
-            userName: user.userName,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            user_id: result._id,
           },
           `${process.env.SCREAT_CODE}`,
           { expiresIn: '48h' },
@@ -96,21 +89,21 @@ userController.updateUser = async (req, res, next) => {
     let { body } = req;
     let user = await USER.findOneAndUpdate(
       {
-        $or: [{ userName: body.userName }],
+        $or: [
+          { _id: body.user_id },
+          {
+            userName: body.user_id,
+          },
+        ],
       },
       {
-        ...body,
+        $set: { ...body },
       },
     );
     if (user) {
-      res.status(201).json({
-        status: 'success',
-      });
+      otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'User data updated successfully!', null);
     } else {
-      res.status(400).json({
-        status: 'error',
-        message: 'User not found!',
-      });
+      otherHelper.sendResponse(res, httpStatus.BAD_REQUEST, false, null, null, "User does't exit", null);
     }
   } catch (error) {
     next(error);
@@ -119,7 +112,7 @@ userController.updateUser = async (req, res, next) => {
 userController.getUserdetails = async (req, res, next) => {
   try {
     let { user } = req;
-    const filter = { _id: user.id };
+    const filter = { _id: user.user_id };
     let result = await USER.find(filter).select('-password');
     let userinfo = result[0];
     if (userinfo) {
@@ -131,11 +124,10 @@ userController.getUserdetails = async (req, res, next) => {
     next(error);
   }
 };
-// delete user
 userController.deleteUser = async (req, res, next) => {
   try {
-    let { query } = req;
-    let user = await USER.findOneAndDelete({ userName: query.userName });
+    let { params } = req;
+    let user = await USER.findOneAndDelete({ user_id: params.user_id });
     if (user) {
       otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'User data deleted successfully!', null);
     } else {
@@ -145,5 +137,4 @@ userController.deleteUser = async (req, res, next) => {
     next(error);
   }
 };
-
 module.exports = userController;

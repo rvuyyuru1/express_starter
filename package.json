@@ -1,16 +1,18 @@
 {
   "name": "Expressjsstarter",
   "version": "1.0.0",
-  "description": "Server for API of WaftEngine",
+  "description": "Server for my http API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index",
     "test": "jest --watchAll --verbose --coverage",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "pm2start": "npx pm2 start pm2.json",
+    "pm2restart": "npx pm2 restart",
+    "pm2kill": "npx pm2 kill",
+    "pm2logs": "npx pm2 logs"
   },
-  "author": "",
+  "author": "Raja shekar reddy (rvuyyuru1)",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -4,23 +4,36 @@ const httpStatus = require('http-status');
 const otherHelper = require('../../../helper/others.helper');
 const internal = {};
 const loginLogController = {};
-
 internal.addloginlog = async (req, token, next) => {
   try {
     const secretOrKey = process.env.SCREAT_CODE;
     let jwtPayLoad = await jwt.verify(token, secretOrKey);
     let expires_in = new Date(jwtPayLoad.exp * 1000);
-    let user_id = jwtPayLoad.id;
+    let { user_id } = jwtPayLoad;
     const newLog = new loginLogSch({ user_id, expires_in, ip_address: req.client_info.ip, device_info: req.client_info.device, browser_info: req.client_info.browser, platform_info: req.platform, token });
     return newLog.save();
   } catch (err) {
     next(err);
   }
 };
+
 loginLogController.logout = async (req, res, next) => {
   let { token } = req;
   try {
     let inactiveLog = await loginLogSch.findOneAndUpdate({ token }, { $set: { is_active: false, logout_date: Date.now() } });
+    if (inactiveLog) {
+      return otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'Logged out', null);
+    } else {
+      return otherHelper.sendResponse(res, httpStatus.OK, false, null, null, 'Logged out', null);
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+loginLogController.deletetoken = async (req, res, next) => {
+  let { token } = req;
+  try {
+    let inactiveLog = await loginLogSch.findOneAndDelete({ token });
     if (inactiveLog) {
       return otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'Logged out', null);
     } else {

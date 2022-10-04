@@ -35,11 +35,11 @@ otherHelper.mongoIdExistInArray = (mongodbIdArray, mongoDbId) => {
 };
 
 otherHelper.parseFilters = (req, defaults, is_deleted) => {
+  console.log(req.query);
   const size_default = defaults ? defaults : 10;
   let page;
   let size;
   let sortQuery = { _id: -1 };
-  let sort_key;
   let searchQuery = {};
   let populate = [];
   let selectQuery = { __v: 0 };
