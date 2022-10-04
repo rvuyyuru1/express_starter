@@ -1,7 +1,7 @@
 'use strict';
 const crypto = require('crypto');
 const PhoneNumber = require('awesome-phonenumber');
-
+const uuid = require('uuid4');
 const otherHelper = {};
 
 otherHelper.mongoIdExistInArray = (mongodbIdArray, mongoDbId) => {
@@ -17,6 +17,9 @@ otherHelper.generateRandomHexString = (len) => {
     .toString('hex') // convert to hexadecimal format
     .slice(0, len)
     .toUpperCase(); // return required number of characters
+};
+otherHelper.genrateuuid4 = () => {
+  return uuid();
 };
 otherHelper.generateRandomNumberString = (len) => {
   return Math.floor(Math.random() * 8999 + 1000);

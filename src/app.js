@@ -14,7 +14,11 @@ const otherHelper = require('./helper/others.helper');
 const { AddErrorToLogs } = require('./modules/bug/bugController');
 const app = express();
 // Logger middleware
-app.use(logger('dev'));
+if (app.get('env') === 'development') {
+  app.use(logger('common'));
+} else {
+  app.use(logger('short'));
+}
 app.use(device.capture());
 // Body parser middleware
 // create application/json parser
@@ -27,9 +31,10 @@ app.use(
 app.use(
   bodyParser.urlencoded({
     limit: '50mb',
-    extended: false,
+    extended: true,
   }),
 );
+
 // protect against HTTP Parameter Pollution attacks
 app.use(hpp());
 app.use(helmet());
@@ -42,7 +47,6 @@ Promise.resolve(app)
 
 // Database Connection
 async function MongoDBConnection() {
-  console.log(`| MongoDB URL  : ${mongoURI}`);
   await mongoose
     .connect(mongoURI, {
       useNewUrlParser: true,

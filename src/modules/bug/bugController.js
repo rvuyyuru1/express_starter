@@ -3,7 +3,6 @@ const bugSch = require('./bugSchema');
 const bugHelper = require('../../helper/error.helper');
 const otherHelper = require('../../helper/others.helper');
 const bugController = {};
-
 bugController.AddErrorToLogs = async (req, res, next, err) => {
   const is_already = await bugSch.findOne({ error_message: err.message });
   if (is_already) {
