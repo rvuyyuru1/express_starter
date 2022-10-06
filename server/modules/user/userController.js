@@ -9,7 +9,7 @@ const httpStatus = require('http-status');
 userController.createUser = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  mobile: Joi.string().required(),
+  mobile: Joi.string(),
   email: Joi.string().email(),
   imgUrl: Joi.string(),
   password: Joi.string().required(),

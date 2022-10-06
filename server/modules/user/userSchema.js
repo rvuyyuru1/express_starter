@@ -19,7 +19,6 @@ const userSchema = new schema(
     },
     mobile: {
       type: String,
-      required: true,
     },
     email: {
       type: String,
