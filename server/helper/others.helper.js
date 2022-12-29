@@ -21,7 +21,9 @@ otherHelper.genrateuuid4 = () => {
   return uuid();
 };
 otherHelper.generateRandomNumberString = (len) => {
-  return Math.floor(Math.random() * 8999 + 1000);
+  return Math.floor(Math.random() * 8999 + 1000)
+    .toString()
+    .substring(0, len);
 };
 otherHelper.mongoIdExistInArray = (mongodbIdArray, mongoDbId) => {
   if (mongodbIdArray) {

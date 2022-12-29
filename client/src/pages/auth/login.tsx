@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Logo from '../../components/common/logo';
 import Seo from '../../components/SEO/seo';
 import { Formik, Form, ErrorMessage } from 'formik';
@@ -7,6 +7,10 @@ import Button from '../../components/common/button';
 import Link from '../../components/common/link';
 import cn from 'classnames';
 import * as Yup from 'yup';
+import { useUI } from 'src/context/uicontext';
+import { PostApi } from 'src/services/http/_http';
+import { APP_ENDPOINTS } from 'src/services/http/APPendpoints';
+import { useRouter } from 'next/router';
 const Header = () => {
   return (
     <header className="h-16 p-4">
@@ -17,10 +21,31 @@ const Header = () => {
   );
 };
 const LoginPage: NextPage = () => {
+  const router = useRouter();
+  const { setApploading, authorize } = useUI();
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('This feild is required!'),
     password: Yup.string().min(3, 'Password must be 3 characters at minimum').required('Password is required!'),
   });
+  const handleLogin = (values: any) => {
+    setApploading(true);
+    PostApi(APP_ENDPOINTS.login, {
+      userName: values.email,
+      password: values.password,
+    })
+      .then((res: any) => {
+        setApploading(false);
+        if (res) {
+          localStorage.setItem('U_TOKEN', res.token);
+          router.replace('/home');
+          authorize();
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+        setApploading(false);
+      });
+  };
   return (
     <>
       <Seo path="/auth/login" title="Log in to Todolist" defaultTitle="Log in to Todolist" />
@@ -36,28 +61,27 @@ const LoginPage: NextPage = () => {
                 initialValues={{ email: '', password: '' }}
                 onSubmit={(values) => {
                   console.log(values);
+                  handleLogin(values);
                 }}
                 validateOnChange={true}
                 validateOnBlur={true}
                 validateOnMount={true}
               >
-                {({ touched, errors, isSubmitting, values, handleChange, handleBlur }) => {
+                {({ touched, errors, values, handleChange, handleBlur }) => {
                   return (
                     <>
-                      {!isSubmitting && (
-                        <Form className="space-y-5 mt-5">
-                          <input type="text" name="email" onChange={handleChange} onBlur={handleBlur} value={values.email} placeholder="Phone or Email" className={cn('form-input px-4 py-3 w-full focus:shadow-md focus:ring-coolGray-400  rounded-sm', touched?.email && errors?.email ? 'border-red-500' : '')} /> {/* error */}
-                          <ErrorMessage component="div" name="email" className="text-red-500 text-md font-semibold my-0 " />
-                          <input type="password" onChange={handleChange} onBlur={handleBlur} value={values.password} name="password" placeholder="Enter password" className={cn('form-input px-4 py-3 w-full focus:shadow-md focus:ring-coolGray-400  rounded-sm', touched?.password && errors?.password ? 'border-red-500' : '')} /> {/* error */}
-                          <ErrorMessage component="div" name="password" className="text-red-500 text-md font-semibold " />
-                          <div className="flex justify-end">
-                            <a className="font-bold text-primary hover:bg-red-100 hover:underline py-2 px-4 rounded-full" href="#">
-                              Forgot password?
-                            </a>
-                          </div>
-                          <Button buttonType="submit">Login now</Button>
-                        </Form>
-                      )}
+                      <Form className="space-y-5 mt-5">
+                        <input type="text" name="email" onChange={handleChange} onBlur={handleBlur} value={values.email} placeholder="Phone or Email" className={cn('form-input px-4 py-3 w-full focus:shadow-md focus:ring-coolGray-400  rounded-sm', touched?.email && errors?.email ? 'border-red-500' : '')} /> {/* error */}
+                        <ErrorMessage component="div" name="email" className="text-red-500 text-md font-semibold my-0 " />
+                        <input type="password" onChange={handleChange} onBlur={handleBlur} value={values.password} name="password" placeholder="Enter password" className={cn('form-input px-4 py-3 w-full focus:shadow-md focus:ring-coolGray-400  rounded-sm', touched?.password && errors?.password ? 'border-red-500' : '')} /> {/* error */}
+                        <ErrorMessage component="div" name="password" className="text-red-500 text-md font-semibold " />
+                        <div className="flex justify-end">
+                          <a className="font-bold text-primary hover:bg-red-100 hover:underline py-2 px-4 rounded-full" href="#">
+                            Forgot password?
+                          </a>
+                        </div>
+                        <Button buttonType="submit">Login now</Button>
+                      </Form>
                     </>
                   );
                 }}

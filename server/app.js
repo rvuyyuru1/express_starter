@@ -8,10 +8,12 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const hpp = require('hpp');
 const helmet = require('helmet');
+var cors = require('cors');
 const httpStatus = require('http-status');
 const mongoURI = process.env.MONGODB_URI;
 const otherHelper = require('./helper/others.helper');
 const { AddErrorToLogs } = require('./modules/bug/bugController');
+const routes = require('./routes/index');
 const app = express();
 // Logger middleware
 if (app.get('env') === 'development') {
@@ -31,7 +33,7 @@ app.use(
 app.use(
   bodyParser.urlencoded({
     limit: '50mb',
-    extended: true,
+    extended: false,
   }),
 );
 
@@ -59,17 +61,41 @@ async function MongoDBConnection() {
 
   return null;
 }
-
-// CORS setup for dev
-app.use(function (req, res, next) {
-  req.client_ip_address = requestIp.getClientIp(req);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'DELETE, GET, POST, PUT, PATCH');
-  next();
+mongoose.connection.on('error', function (err) {
+  console.log('Mongoose default connection has occured ' + err + ' error');
+  process.exit(0);
 });
 
-const routes = require('./routes/index');
+mongoose.connection.on('disconnected', function () {
+  console.log('Mongoose default connection is disconnected');
+  process.exit(0);
+});
+
+process.on('SIGINT', function () {
+  mongoose.connection.close(function () {
+    console.log('Mongoose default connection is disconnected due to application termination');
+    process.exit(0);
+  });
+});
+process.on('ECONNREFUSED', function () {
+  mongoose.connection.close(function () {
+    console.log('Mongoose default connection is disconnected due to application termination');
+    process.exit(0);
+  });
+});
+
+// CORS setup for dev
+
+app.use(function (req, res, next) {
+  req.client_ip_address = requestIp.getClientIp(req);
+  // res.header('Access-Control-Allow-Origin', '*');
+  // res.header('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept');
+  // res.header('Access-Control-Allow-Methods', 'DELETE, GET, POST, PUT, PATCH');
+  // res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
+app.use(cors());
+
 // Use Routes
 app.use('/api', routes);
 

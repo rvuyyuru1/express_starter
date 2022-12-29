@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "MY-HTTP-SERVER",
-      "script": "index.js",
+      "script": "./src/index.js",
       "merge_logs": true,
       "watch": true,
       "ignore_watch": [".certs", ".docker", "node_modules", ".idea", ".env", ".git", "admin/node_modules", "public", "lib/configs/*.json"],

@@ -2,15 +2,19 @@ import React from 'react';
 export interface State {
   isAuthorized: boolean;
   apploading: boolean;
+  userDetails: any;
 }
 const initialState: State = {
   isAuthorized: false,
   apploading: false,
+  userDetails: undefined,
 };
 
 interface UIProviderState extends State {
   authorize: () => void;
   unauthorize: () => void;
+  setApploading: (apploading: boolean) => void;
+  setUserDetails: (userDetails: any) => void;
 }
 type Action =
   | {
@@ -18,6 +22,14 @@ type Action =
     }
   | {
       type: 'SET_UNAUTHORIZED';
+    }
+  | {
+      type: 'SET_APPLOADING';
+      apploading: boolean;
+    }
+  | {
+      type: 'SET_USERDETAILS';
+      userDetails: any;
     };
 
 const uiReducer = (state: State, action: Action) => {
@@ -33,6 +45,18 @@ const uiReducer = (state: State, action: Action) => {
         ...initialState,
       };
     }
+    case 'SET_APPLOADING': {
+      return {
+        ...state,
+        apploading: action.apploading,
+      };
+    }
+    case 'SET_USERDETAILS': {
+      return {
+        ...state,
+        userDetails: action.userDetails,
+      };
+    }
   }
 };
 
@@ -44,11 +68,19 @@ export const UIProvider = (props: any) => {
   }, [state]);
   const authorize = () => dispatch({ type: 'SET_AUTHORIZED' });
   const unauthorize = () => dispatch({ type: 'SET_UNAUTHORIZED' });
+  const setApploading = (apploading: boolean) => dispatch({ type: 'SET_APPLOADING', apploading });
+  const setUserDetails = (userDetails: any) =>
+    dispatch({
+      type: 'SET_USERDETAILS',
+      userDetails,
+    });
   const value = React.useMemo(
     () => ({
       ...state,
       authorize,
       unauthorize,
+      setApploading,
+      setUserDetails,
     }),
     [state],
   );
@@ -65,4 +97,4 @@ export const useUI = () => {
   return context;
 };
 
-export const ManagedUIContext = ({ children }: any) => <UIProvider>{children}</UIProvider>;
+export const ManagedUIContext: React.FC<{ children: React.ReactNode }> = ({ children }) => <UIProvider>{children}</UIProvider>;

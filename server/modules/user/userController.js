@@ -4,7 +4,7 @@ const userController = {};
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const otherHelper = require('../../helper/others.helper');
-const Logger = require('../user/loginlogs/loginlogController');
+const Logger = require('./loginlogs/loginlogController');
 const httpStatus = require('http-status');
 userController.createUser = Joi.object({
   firstName: Joi.string().required(),
@@ -63,11 +63,13 @@ userController.getUser = async (req, res, next) => {
       $or: [{ userName: body.userName }, { email: body.userName }, { mobile: body.userName }],
     });
     if (user) {
+      console.log(user);
       let isuser = await bcyrpt.compare(body.password, user.password);
+      console.log(isuser);
       if (isuser) {
         var token = jwt.sign(
           {
-            user_id: result._id,
+            user_id: user._id,
           },
           `${process.env.SCREAT_CODE}`,
           { expiresIn: '48h' },
@@ -78,7 +80,7 @@ userController.getUser = async (req, res, next) => {
         otherHelper.sendResponse(res, httpStatus.BAD_REQUEST, false, null, null, "Password does't match", null);
       }
     } else {
-      otherHelper.sendResponse(res, httpStatus.NOT_FOUND, false, null, null, 'No user found', null);
+      otherHelper.sendResponse(res, httpStatus.BAD_REQUEST, false, null, null, 'No user found', null);
     }
   } catch (err) {
     next(err);
@@ -116,7 +118,7 @@ userController.getUserdetails = async (req, res, next) => {
     let result = await USER.find(filter).select('-password');
     let userinfo = result[0];
     if (userinfo) {
-      otherHelper.sendResponse(res, httpStatus.OK, true, { userinfo }, null, 'User data obtained successfully!', null);
+      otherHelper.sendResponse(res, httpStatus.OK, true, userinfo, null, 'User data obtained successfully!', null);
     } else {
       otherHelper.sendResponse(res, httpStatus.BAD_REQUEST, false, null, null, "User does't exit", null);
     }

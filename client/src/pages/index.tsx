@@ -1,6 +1,8 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useUI } from 'src/context/uicontext';
 import Button from '../components/common/button';
 import HomeHeader from '../components/headers/homeheader';
 import Seo from '../components/SEO/seo';

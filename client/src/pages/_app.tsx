@@ -9,7 +9,11 @@ import useHasMounted from '../hooks/useMounted';
 import ErrorBoundary from '../components/errorboundary';
 import { DefaultSeo } from '../components/SEO/default-seo';
 import { ManagedUIContext } from 'src/context/uicontext';
-
+import Loader from '@components/layouts/loader';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import AuthLayout from '@components/layouts/authlayout';
+//
 const CustomApp = ({ Component, pageProps }: AppProps) => {
   const queryClientRef = useRef<any>();
   const router = useRouter();
@@ -33,9 +37,14 @@ const CustomApp = ({ Component, pageProps }: AppProps) => {
         <Hydrate state={pageProps?.dehydratedState}>
           <ManagedUIContext>
             <DefaultSeo />
-            <Layout pageProps={pageProps}>
-              <Component {...pageProps} key={router.route} />
-            </Layout>
+            <Loader>
+              <AuthLayout>
+                <Layout pageProps={pageProps}>
+                  <Component {...pageProps} key={router.route} />
+                </Layout>
+              </AuthLayout>
+            </Loader>
+            <ToastContainer />
           </ManagedUIContext>
         </Hydrate>
         <ReactQueryDevtools />
